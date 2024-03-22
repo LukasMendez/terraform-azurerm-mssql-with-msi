@@ -1,3 +1,10 @@
+variable "environment" {
+    type = object({
+        subscription_id = string
+        access_token = optional(string, "")
+    })
+}
+
 variable "sql_database" {
   type = object({
     copy_configuration = optional(object({
