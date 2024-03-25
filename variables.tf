@@ -44,7 +44,8 @@ variable "sql_server_entra_group" {
   type = object({
       name = string,
       members = optional(list(string), [])
-  })
+  }),
+  default = null
 }
 
 # External SQL server, if none is specified, a new one will be created instead 
