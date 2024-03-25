@@ -2,6 +2,8 @@ variable "environment" {
     type = object({
         subscription_id = string
         access_token = optional(string, "")
+        environment = string
+        system = string
     })
 }
 
