@@ -112,13 +112,13 @@ resource "azuread_group" "sql_server_admins" {
   # Create an admin group only if we are creating the SQL server ourselves
   count = local.create_sql_server == true ? 1 : 0
 
-  display_name     = var.sql_server.entra_admin_group.name
+  display_name     = var.sql_server_entra_group.name
   owners           = [data.azurerm_client_config.current.object_id]
   security_enabled = true
   
   members = concat(
     [data.azurerm_client_config.current.object_id], 
-    var.sql_server.entra_admin_group.members
+    var.sql_server_entra_group.members
   )
 
   lifecycle {
@@ -128,13 +128,13 @@ resource "azuread_group" "sql_server_admins" {
 }
 
 resource "azuread_group" "sql_database_admins" {
-  display_name     = var.sql_database.entra_admin_group.name
+  display_name     = var.sql_database_entra_group.name
   owners           = [data.azurerm_client_config.current.object_id]
   security_enabled = true
   
   members = concat(
     [data.azurerm_client_config.current.object_id], 
-    var.sql_database.entra_admin_group.members
+    var.sql_database_entra_group.members
   )
 
   lifecycle {
