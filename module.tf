@@ -86,8 +86,6 @@ resource "azurerm_mssql_server" "global" {
 }
 
 resource "azurerm_mssql_firewall_rule" "global_clients" {
-  count            = local.create_sql_server == true ? 1 : 0
-
   for_each         = tomap({ for ip_rule in var.sql_server.ip_allowlist : ip_rule.rule_name => ip_rule })
 
   name             = each.value.rule_name

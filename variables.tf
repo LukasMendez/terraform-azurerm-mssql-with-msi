@@ -44,7 +44,7 @@ variable "sql_server_entra_group" {
   type = object({
       name = string,
       members = optional(list(string), [])
-  }),
+  })
   default = null
 }
 
