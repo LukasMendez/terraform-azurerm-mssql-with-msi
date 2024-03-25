@@ -11,6 +11,9 @@ locals {
 
     # Used to decide if we are making a copy of a database
   create_database_copy = var.sql_database.copy_configuration != null ? true : false
+
+  // IP allowlist which is only used when we create the SQL server ourselves
+  conditional_ip_allowlist = local.create_sql_server ? tomap({ for ip_rule in var.sql_server.ip_allowlist : ip_rule.rule_name => ip_rule }) : {}
 }
 
 # Gets information about the user who is currently signed in with az login 
@@ -86,7 +89,7 @@ resource "azurerm_mssql_server" "global" {
 }
 
 resource "azurerm_mssql_firewall_rule" "global_clients" {
-  for_each         = tomap({ for ip_rule in var.sql_server.ip_allowlist : ip_rule.rule_name => ip_rule })
+  for_each         = local.conditional_ip_allowlist
 
   name             = each.value.rule_name
   server_id        = azurerm_mssql_server.global[0].id
