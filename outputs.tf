@@ -6,7 +6,7 @@ output "sql_database" {
 
 output "sql_server" {
   value = length(azurerm_mssql_server.global) > 0 ? {
-    id                         = azurerm_mssql_server.global[0].identity.id
+    id                         = azurerm_mssql_server.global[0].id
     fully_qualified_domain_name = azurerm_mssql_server.global[0].fully_qualified_domain_name
   } : null
 }
