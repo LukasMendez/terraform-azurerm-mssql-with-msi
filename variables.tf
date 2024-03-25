@@ -39,9 +39,7 @@ variable "sql_server" {
       end_ip_address = string
     }))    
   })
-  default = {
-    ip_allowlist = []
-  }  
+  default = null
 }
 
 # External SQL server, if none is specified, a new one will be created instead 
