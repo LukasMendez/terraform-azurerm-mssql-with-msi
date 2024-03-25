@@ -9,7 +9,7 @@ This Terraform module facilitates the creation and management of Azure SQL Datab
 
 ## Features
 
-- **Managed Identity Support**: Automatically assigns `db_owner` role to a specified Azure AD group using Managed Identity, removing the need for manual post-deployment configuration.
+- **Managed Identity Support**: Automatically assigns `db_owner` role to a specified Azure Entra group using Managed Identity, removing the need for manual post-deployment configuration.
 - **Flexible Database Creation**: Supports creating a new Azure SQL Database on either a new or an existing SQL server.
 - **Database Cloning**: Offers the ability to clone an existing database, ideal for pre-production or testing environments that require a database identical to production.
 - **Custom PowerShell Scripting**: Utilizes a custom PowerShell script to manage role assignments seamlessly within the module, as this is not yet supported by the official provider.
