@@ -9,7 +9,10 @@ variable "sql_database" {
   type = object({
     copy_configuration = optional(object({
         source_database_name = string,
-        source_database_server_id = string
+        source_database_server = object({
+          name = string
+          resource_group_name = string
+        })
     }), null)
     name = string
     sku_name = optional(string, "S0")

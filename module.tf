@@ -23,11 +23,19 @@ data "azurerm_resource_group" "sql_server" {
 }
 
 # Only relevant if we are creating a copy of an existing source database
+data "azurerm_mssql_server" "source_copy_server" {
+  count = local.create_database_copy == true ? 1 : 0
+  
+  name                = var.sql_database.copy_configuration.source_database_server.name
+  resource_group_name = var.sql_database.copy_configuration.source_database_server.resource_group_name
+}
+
+# Only relevant if we are creating a copy of an existing source database
 data "azurerm_mssql_database" "source_copy_database" {
     count = local.create_database_copy == true ? 1 : 0
 
     name = var.sql_database.copy_configuration.source_database_name
-    server_id = var.sql_database.copy_configuration.source_database_server_id
+    server_id = data.azurerm_mssql_server.source_copy_server[0].id
 }
 
 resource "azurerm_mssql_database" "global" {
