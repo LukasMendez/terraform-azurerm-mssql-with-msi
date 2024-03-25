@@ -39,20 +39,14 @@ To use this module in your Terraform environment, configure the variables as per
 ### Example
 
 ```hcl
-module "azure_sql_database" {
-  source  = "path/to/module"
-
-  environment = {
-    subscription_id = "your-subscription-id"
-    access_token    = "your-access-token" # Optional
-    environment     = "your-environment"
-    system          = "your-system"
-  }
-
-  sql_database = {
-    name = "example-database"
-    sku_name = "S0" # Optional
-  }
-
-  // ... additional configuration
+module "database" {
+    source                      = "github.com/LukasMendez/terraform-azurerm-mssql-with-msi"
+    environment                 = var.environment
+    sql_database                = var.sql_database
+    external_sql_server         = var.external_sql_server
+    sql_database_entra_group    = { 
+        name = var.sql_database_entra_group.name, 
+        members = data.azuread_group.database_owner_reference_group.members 
+    }
+}
 }
