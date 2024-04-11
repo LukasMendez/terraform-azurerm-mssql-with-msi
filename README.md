@@ -27,12 +27,13 @@ To use this module in your Terraform environment, configure the variables as per
 
 ### Configuration Variables
 
-- `environment`: Defines the subscription, access token, and environment details.
+- `environment`: Defines the subscription, and environment details.
 - `sql_database`: Specifies the new SQL database's name, SKU, and optionally the source for cloning.
 - `sql_database_entra_group`: Defines the name and members of the Azure Entra group for the database.
 - `sql_server`: Configures the new SQL server's details, including admin credentials and IP allowlist.
 - `sql_server_entra_group`: Specifies the Azure Entra group details for the SQL server.
 - `external_sql_server`: When provided, the module will use the existing SQL server instead of creating a new one.
+- `access_token`: When provided Terraform will use this access token in the PowerShell script for assigning permissions to the database
 
 **Note**: For database cloning, ensure `copy_configuration` is provided under `sql_database`. If you plan to use an existing server, specify `external_sql_server` and leave `sql_server` and `sql_server_entra_group` empty.
 
@@ -49,4 +50,4 @@ module "database" {
         members = data.azuread_group.database_owner_reference_group.members 
     }
 }
-}
+

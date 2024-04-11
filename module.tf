@@ -146,7 +146,7 @@ resource "azuread_group" "sql_database_admins" {
 
 resource "null_resource" "sql_role_assignment" {
   provisioner "local-exec" {
-  command = "Set-ExecutionPolicy Bypass -Scope Process -Force; & './${path.module}/scripts/sql_role_assignment.ps1' '${local.create_sql_server == true ? azurerm_mssql_server.global[0].fully_qualified_domain_name : data.azurerm_mssql_server.external[0].fully_qualified_domain_name}' '${azurerm_mssql_database.global.name}' '${azuread_group.sql_database_admins.display_name}' '${data.azurerm_client_config.current.tenant_id}' '${var.environment.subscription_id}' '${var.environment.access_token}'"
+  command = "Set-ExecutionPolicy Bypass -Scope Process -Force; & './${path.module}/scripts/sql_role_assignment.ps1' '${local.create_sql_server == true ? azurerm_mssql_server.global[0].fully_qualified_domain_name : data.azurerm_mssql_server.external[0].fully_qualified_domain_name}' '${azurerm_mssql_database.global.name}' '${azuread_group.sql_database_admins.display_name}' '${data.azurerm_client_config.current.tenant_id}' '${var.environment.subscription_id}' '${var.access_token}'"
 
     interpreter = ["PowerShell", "-Command"]
   }

@@ -1,7 +1,6 @@
 variable "environment" {
     type = object({
         subscription_id = string
-        access_token = optional(string, "")
         environment = string
         system = string
     })
@@ -59,3 +58,7 @@ variable "external_sql_server" {
   default = null
 }
 
+variable "access_token" {
+  type = string
+  default = ""
+}
