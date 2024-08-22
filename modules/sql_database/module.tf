@@ -128,7 +128,7 @@ resource "azuread_group" "sql_server_admins" {
   }
 }
 
-resource "azuread_group" "sql_database_admins" {
+resource "azuread_group" "sql_database_group" {
   display_name     = var.sql_database_entra_group.name
   owners           = [data.azurerm_client_config.current.object_id]
   security_enabled = true
@@ -144,15 +144,19 @@ resource "azuread_group" "sql_database_admins" {
   }
 }
 
-resource "null_resource" "sql_role_assignment" {
-  provisioner "local-exec" {
-  command = "Set-ExecutionPolicy Bypass -Scope Process -Force; & './${path.module}/scripts/sql_role_assignment.ps1' '${local.create_sql_server == true ? azurerm_mssql_server.global[0].fully_qualified_domain_name : data.azurerm_mssql_server.external[0].fully_qualified_domain_name}' '${azurerm_mssql_database.global.name}' '${azuread_group.sql_database_admins.display_name}' '${data.azurerm_client_config.current.tenant_id}' '${var.environment.subscription_id}' '${var.sql_role}' '${var.access_token}'"
+module "sql_role_assignment" {
+  source = "../sql_role_assignment"
 
-    interpreter = ["PowerShell", "-Command"]
-  }
+  sql_server_name        = local.create_sql_server == true ? azurerm_mssql_server.global[0].fully_qualified_domain_name : data.azurerm_mssql_server.external[0].fully_qualified_domain_name
+  sql_database_name      = azurerm_mssql_database.global.name
+  service_principal_name = azuread_group.sql_database_group.display_name
+  tenant_id              = data.azurerm_client_config.current.tenant_id
+  subscription_id        = var.environment.subscription_id
+  sql_role               = var.sql_role
+  access_token           = var.access_token
 
   depends_on = [
     azurerm_mssql_database.global,
-    azuread_group.sql_database_admins
+    azuread_group.sql_database_group
   ]
 }
