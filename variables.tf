@@ -58,6 +58,11 @@ variable "external_sql_server" {
   default = null
 }
 
+variable "sql_role" {
+  type = string
+  default = "db_owner"
+}
+
 variable "access_token" {
   type = string
   default = ""

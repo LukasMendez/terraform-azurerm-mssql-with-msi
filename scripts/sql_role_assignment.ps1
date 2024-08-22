@@ -4,6 +4,7 @@ param (
     [string]$servicePrincipalName,
     [string]$tenantId,
     [string]$subscriptionId,
+    [string]$dbRole = "db_owner",    
     [string]$accessToken = ""
 )
 
@@ -59,7 +60,12 @@ $defaultSchema = 'dbo'
 
 # If no optional token was provided upfront, try to get a new one
 if (([string]::IsNullOrEmpty($accessToken))) {
-$accessToken = (az account get-access-token --resource https://database.windows.net | ConvertFrom-Json).accessToken
+    $accessToken = (az account get-access-token --resource https://database.windows.net | ConvertFrom-Json).accessToken
+}
+
+# Ensure that even if the dbRole is overwritten we will still use db_owner at default if new provided value is empty
+if (([string]::IsNullOrEmpty($dbRole))) {
+    $dbRole = 'db_owner'
 }
 
 # Check if the user already exists
@@ -68,9 +74,9 @@ $userExists = (Invoke-Sqlcmd -ServerInstance $sqlServerName -Database $sqlDataba
 # If the user does not exist, create the user and add it to the db_owner role
 if (!$userExists) {
     Write-Output "User $servicePrincipalName does not exists already. Creating user in the database."
-    $createUserSqlQuery = "CREATE USER [$servicePrincipalName] FROM EXTERNAL PROVIDER WITH DEFAULT_SCHEMA = [$defaultSchema]; ALTER ROLE db_owner ADD MEMBER [$servicePrincipalName];"
+    $createUserSqlQuery = "CREATE USER [$servicePrincipalName] FROM EXTERNAL PROVIDER WITH DEFAULT_SCHEMA = [$defaultSchema]; ALTER ROLE $dbRole ADD MEMBER [$servicePrincipalName];"
     Invoke-Sqlcmd -ServerInstance $sqlServerName -Database $sqlDatabaseName -AccessToken $accessToken -Query $createUserSqlQuery
-    Write-Output "User $servicePrincipalName created and added to db_owner role."
+    Write-Output "User $servicePrincipalName created and added to $dbRole role."
 } else {
     Write-Output "User $servicePrincipalName already exists."
 }
