@@ -78,7 +78,7 @@ This module is used to assign additional roles to an existing Azure SQL Database
 - `subscription_id`: Specifies the Azure subscription ID where the SQL Server and database are hosted.
 - `sql_role`: Defines the SQL role that you want to assign to the service principal or Azure Entra group in the database. Default: `db_owner`.
 - `access_token`: When provided, Terraform will use this access token in the PowerShell script for assigning permissions to the database. This is useful in scenarios where the module is executed from an Infrastructure as Code (IaC) pipeline and the script cannot access the Azure token used in Terraform directly.
-- `depends_on`: A list of resource dependencies that ensures this module's operations occur after specific resources have been created.
+- `dependencies`: A list of resource dependencies that ensures this module's operations occur after specific resources have been created.
 
 ### Example
 

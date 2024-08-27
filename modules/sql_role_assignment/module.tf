@@ -5,6 +5,6 @@ resource "null_resource" "sql_role_assignment" {
     interpreter = ["PowerShell", "-Command"]
   }
 
-  depends_on = var.depends_on
+  depends_on = var.dependencies
 
 }
