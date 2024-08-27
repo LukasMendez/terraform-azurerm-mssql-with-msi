@@ -29,6 +29,6 @@ variable "access_token" {
 }
 
 variable "dependencies" {
-  type = list(any)
+  type = any
   default = []    
 }
