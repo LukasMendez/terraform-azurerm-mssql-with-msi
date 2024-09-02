@@ -175,9 +175,8 @@ module "sql_role_assignment" {
   sql_role               = var.sql_role
   access_token           = var.access_token
 
-  depends_on = concat([
+  depends_on = [
     azurerm_mssql_database.global,
     azuread_group.sql_database_group
-  ], [var.dependencies])
-  
+  ]
 }
