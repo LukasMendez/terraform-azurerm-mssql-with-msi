@@ -23,6 +23,8 @@ data "azurerm_client_config" "current" {}
 # The module expects a resource group to be created upfront 
 data "azurerm_resource_group" "sql_server" {
   name = local.create_sql_server == true ? var.sql_server.resource_group_name : var.external_sql_server.resource_group_name
+
+  depends_on = [var.dependencies]
 }
 
 # Only relevant if we are creating a copy of an existing source database
@@ -31,14 +33,18 @@ data "azurerm_mssql_server" "source_copy_server" {
   
   name                = var.sql_database.copy_configuration.source_database_server.name
   resource_group_name = var.sql_database.copy_configuration.source_database_server.resource_group_name
+
+  depends_on = [var.dependencies]  
 }
 
 # Only relevant if we are creating a copy of an existing source database
 data "azurerm_mssql_database" "source_copy_database" {
-    count = local.create_database_copy == true ? 1 : 0
+  count = local.create_database_copy == true ? 1 : 0
 
-    name = var.sql_database.copy_configuration.source_database_name
-    server_id = data.azurerm_mssql_server.source_copy_server[0].id
+  name = var.sql_database.copy_configuration.source_database_name
+  server_id = data.azurerm_mssql_server.source_copy_server[0].id
+
+  depends_on = [var.dependencies]    
 }
 
 resource "azurerm_mssql_database" "global" {
@@ -53,6 +59,8 @@ resource "azurerm_mssql_database" "global" {
   creation_source_database_id = local.create_database_copy == true ? data.azurerm_mssql_database.source_copy_database[0].id : null
 
   tags = local.common_tags
+
+  depends_on = [var.dependencies]  
 }
 
 
@@ -63,6 +71,8 @@ data "azurerm_mssql_server" "external" {
 
   name                = var.external_sql_server.name
   resource_group_name = data.azurerm_resource_group.sql_server.name
+
+  depends_on = [var.dependencies]
 }
 
 # The following resource is only created when we haven't specified any external SQL server
@@ -86,6 +96,8 @@ resource "azurerm_mssql_server" "global" {
   }
 
   tags = local.common_tags
+
+  depends_on = [var.dependencies]  
 }
 
 resource "azurerm_mssql_firewall_rule" "global_clients" {
@@ -95,6 +107,8 @@ resource "azurerm_mssql_firewall_rule" "global_clients" {
   server_id        = azurerm_mssql_server.global[0].id
   start_ip_address = each.value.start_ip_address
   end_ip_address   = each.value.end_ip_address
+
+  depends_on = [var.dependencies]  
 }
 
 # Allow access to Azure services
@@ -105,6 +119,8 @@ resource "azurerm_mssql_firewall_rule" "global_azure_interally" {
   server_id        = azurerm_mssql_server.global[0].id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
+
+  depends_on = [var.dependencies]  
 }
 
 # Entra 
@@ -126,6 +142,8 @@ resource "azuread_group" "sql_server_admins" {
     # Do not try to revert changes on members
     ignore_changes = [owners, members]
   }
+
+  depends_on = [var.dependencies]  
 }
 
 resource "azuread_group" "sql_database_group" {
@@ -142,6 +160,8 @@ resource "azuread_group" "sql_database_group" {
     # Do not try to revert changes on members
     ignore_changes = [owners, members]
   }
+
+  depends_on = [var.dependencies]  
 }
 
 module "sql_role_assignment" {
@@ -155,8 +175,9 @@ module "sql_role_assignment" {
   sql_role               = var.sql_role
   access_token           = var.access_token
 
-  depends_on = [
+  depends_on = concat([
     azurerm_mssql_database.global,
     azuread_group.sql_database_group
-  ]
+  ], [var.dependencies])
+  
 }

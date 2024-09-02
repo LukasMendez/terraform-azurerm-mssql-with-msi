@@ -67,3 +67,8 @@ variable "access_token" {
   type = string
   default = ""
 }
+
+variable "dependencies" {
+  type = any
+  default = []    
+}
